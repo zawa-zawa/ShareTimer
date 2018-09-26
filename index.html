@@ -4,22 +4,32 @@
 	<meta charset="utf-8">
 	<title>websocket-chat</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="./index.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<!-- C01. Socket.IOクライアントライブラリの読込み -->
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 	<div class="container">
-		<h1>WebSocket-Chat</h1>
+		<h1>Share Timer</h1>
 		<form class="form-inline">
 			<div class="form-group">
-				<label class="roomLabel" for="rooms">部屋：</label>
+				<label class="roomLabel" for="rooms">ルーム名：</label>
 				<input class="form-control" id="rooms">
+
 				<label class="nameLabel" for="msgForm">名前：</label>
 				<input type="text" class="form-control" id="msgForm">
 			</div>
 			<button type="buttn" class="btn btn-primary" id="sendButton">入室</button>
 		</form>
+
+		<!-- todo: ホストにのみ表示するようにする -->
+		<div class="timer-group">
+			<div id="time">00:00:00:00</div>
+			<button id="startStopBtn" for="#timer">START</button>
+			<button id="resetBtn" for="#timer">RESET</button>
+		</div>
+
 		<div id="chatLogs"></div>
 	</div>
 

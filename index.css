@@ -1,0 +1,10 @@
+.timer-group {
+	font-size: 300%;
+	text-align: center;
+	padding-top: 15%;
+	padding-bottom: 15%;
+}
+
+.timer-group button {
+	font-size: 0.5em;
+}

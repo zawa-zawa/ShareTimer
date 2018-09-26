@@ -15,7 +15,7 @@ var RUN = 1;	//動作中
 var STOP = 0;   //停止中
 
 
-function resetStopWatch(){
+const resetStopWatch = () => {
 	mode = STOP;
 	addTime = 0;
 	millisec = sec100 = sec = min = hour = 0;
@@ -24,7 +24,7 @@ function resetStopWatch(){
 }
 
 
-function drawTime(){
+const drawTime = () => {
 	var strTime = "";
 	var strSec100, strSec, strMin, strHour;
 
@@ -51,7 +51,7 @@ function drawTime(){
 }
 
 
-function startStop(){
+const startStop = () => {
 	switch(mode){
 		case STOP:		//スタートを押したとき
 			mode = RUN;
@@ -77,7 +77,7 @@ function startStop(){
 }
 
 
-function runStopWatch(){
+const runStopWatch = () => {
 	//スタートからの差分をとる
 	nowTime = new Date().getTime();
 	diff = new Date(nowTime - startTime);
