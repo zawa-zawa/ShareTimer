@@ -32,8 +32,20 @@ var socket = io.connect();
 var isEnter = false;
 var name = '';
 
-socket.on("server_to_client", function(data){
-	prependMsg(data.value);
+// サーバからデータを受信した
+socket.on("server_to_client", function(data) {
+	if (data.value == "<-data-%startStopBtnPushed%-dataEnd->"){
+		// alert("スタートストップ押されたって");
+		startStop(data.serverTime);
+	} else if (data.value == "<-data-%resetBtnPushed%-dataEnd->") {
+		resetStopWatch();
+	} else if (data.serverTime != null){
+		startStop(data.serverTime);
+		prependMsg(data.value);
+	} else {
+		// チャットテキスト
+		prependMsg(data.value);
+	}
 });
 
 
@@ -64,13 +76,13 @@ $("#sendButton").on("click", function(e) {
 
 
 $("#startStopBtn").on("click", function(e) {
-	socket.emit("client_to_server", {value : "-data-startStopBtnPushed-dataEnd-"});
-	alert("スタートボタンが押したって送信した");
+	socket.emit("client_to_server", {value : "<-data-%startStopBtnPushed%-dataEnd->"});
+	// alert("スタートボタンが押したって送信した");
 });
 
 $("#resetBtn").on("click", function(e) {
-	socket.emit("client_to_server", {value : "-data-resetBtnPushed-dataEnd-"});
-	alert("リセットボタン押したって送信した");
+	socket.emit("client_to_server", {value : "<-data-%resetBtnPushed%-dataEnd->"});
+	// alert("リセットボタン押したって送信した");
 });
 
 
@@ -106,9 +118,4 @@ const changeLabel = () => {
 	$("#rooms").prop("disabled", true);
 	$("#sendButton").text("送信");
 	isEnter = true;
-}
-
-const resetTime = () => {
-	time = "00:00:00:00";
-	alert("リセットした");
 }

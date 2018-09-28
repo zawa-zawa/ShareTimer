@@ -37,6 +37,13 @@ var server = http.createServer(function(req, res) {
 // HTTPサーバにソケットをひも付ける（WebSocket有効化）
 var io = socketio.listen(server);
 
+//ストップウォッチのモード
+const RUN = 1;	//動作中
+const STOP = 0;   //停止中
+
+let mode = STOP;
+let startStopTime = new Date();
+
 // connectionイベントを受信する
 io.sockets.on('connection', function(socket) {
 	var room = '';
@@ -49,11 +56,28 @@ io.sockets.on('connection', function(socket) {
 	});
 	// client_to_serverイベント・データを受信
 	socket.on('client_to_server', function(data) {
-		if (data.value == "-data-startStopBtnPushed-dataEnd-"){
+		if (data.value == "<-data-%startStopBtnPushed%-dataEnd->"){
 			// スタートストップが押された
-		} else if (data.value == "-data-resetBtnPushed-dataEnd-") {
+			switch (mode) {
+				case STOP:
+					mode = RUN;
+					break;
+				case RUN:
+					mode = STOP;
+					break;
+			}
+
+			startStopTime = new Date().getTime();
+
+			io.to(room).emit('server_to_client', {
+				value : data.value,
+				serverTime : startStopTime
+			});
+		} else if (data.value == "<-data-%resetBtnPushed%-dataEnd->") {
 			// リセットが押された
+			io.to(room).emit('server_to_client', {value : data.value});
 		} else {
+			// チャットテキストを受信
 			io.to(room).emit('server_to_client', {value : data.value});
 		}
 	});
@@ -66,12 +90,26 @@ io.sockets.on('connection', function(socket) {
 		var id = socket.id;
 		name = data.value;
 		var personalMessage = "あなたは、" + name + "さんとして入室しました。"
-		io.to(id).emit('server_to_client', {value : personalMessage});
+
+		switch (mode) {
+			case STOP:
+				io.to(id).emit('server_to_client', {
+					value : personalMessage,
+				});
+				break;
+			case RUN:
+				io.to(id).emit('server_to_client', {
+					value : personalMessage,
+					serverTime : startStopTime
+				});
+				break;
+		}
+
 	});
 	// dicconnectイベントを受信し、退出メッセージを送信
 	socket.on('disconnect', function() {
 		if (name == '') {
-			console.log("未入室のまま、どこかへ去っていきました。");
+			// console.log("どっかいった");
 		} else {
 			var endMessage = name + "さんが退出しました。"
 			io.to(room).emit('server_to_client', {value : endMessage});
